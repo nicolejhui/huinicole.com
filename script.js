@@ -5,6 +5,14 @@ const RECENT_COUNT = 3;
 let route = "home"; // "home" | "writing" | "post"
 let postIndex = 0;
 
+function pathForRoute(r) {
+  return r === "writing" ? "/writings" : "/";
+}
+
+function routeForPath(path) {
+  return path === "/writings" || path === "/writing" ? "writing" : "home";
+}
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
@@ -75,10 +83,10 @@ function renderHome() {
       <div class="elsewhere">
         <div class="section-label">Elsewhere</div>
         <div class="social-links">
-          <a href="https://www.linkedin.com/in/nicole-hui/" aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/nicole-hui/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
             <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05A4.2 4.2 0 0 1 16.6 8.7c3.2 0 4.4 2 4.4 5.2V21h-4v-6c0-1.5-.5-2.5-1.9-2.5s-2.1 1-2.1 2.5V21H9z"/></svg>
           </a>
-          <a href="https://github.com/nicolejhui" aria-label="GitHub">
+          <a href="https://github.com/nicolejhui" aria-label="GitHub" target="_blank" rel="noopener noreferrer">
             <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.85-2.35 4.7-4.58 4.94.36.31.68.92.68 1.86v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>
           </a>
           <a href="mailto:huin148j@gmail.com" aria-label="Email">
@@ -274,7 +282,19 @@ document.addEventListener("click", (e) => {
   route = el.getAttribute("data-route");
   if (idxAttr !== null) postIndex = Number(idxAttr);
   window.scrollTo(0, 0);
+  if (route === "home" || route === "writing") {
+    const path = pathForRoute(route);
+    if (path !== window.location.pathname) {
+      history.pushState({ route }, "", path);
+    }
+  }
   render();
 });
 
+window.addEventListener("popstate", () => {
+  route = routeForPath(window.location.pathname);
+  render();
+});
+
+route = routeForPath(window.location.pathname);
 render();

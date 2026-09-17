@@ -1,8 +1,8 @@
-// Each piece of writing lives in its own file under writing/.
+// Each piece of writing lives in its own folder under writing/posts/.
 // This file just collects them and splits published vs. draft.
-import introPost from "./writing/2026-09-09-intro-post.js";
-import sikfanPost from "./writing/2026-sikfan-lets-eat.js";
-import sikfanUxPost from "./writing/2026-sikfan-ux.js";
+import introPost from "./writing/posts/intro-post/post.js";
+import sikfanPost from "./writing/posts/sikfan-lets-eat/post.js";
+import sikfanUxPost from "./writing/posts/sikfan-ux/post.js";
 
 // Newest first.
 const ALL_WRITING = [

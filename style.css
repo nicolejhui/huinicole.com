@@ -170,10 +170,21 @@ a:hover {
   color: #23282a;
 }
 
-.post-row .date {
-  font-size: 12px;
+.recent-month-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-month-label {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
   color: #5f6a63;
-  white-space: nowrap;
+  padding: 18px 4px 4px;
+}
+
+.recent-month-group:first-child .recent-month-label {
+  padding-top: 0;
 }
 
 .elsewhere {
@@ -212,6 +223,19 @@ a:hover {
 .writing-list {
   display: flex;
   flex-direction: column;
+}
+
+.writing-year-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.writing-year-group .section-label {
+  padding-top: 28px;
+}
+
+.writing-year-group:first-child .section-label {
+  padding-top: 0;
 }
 
 .writing-row {
@@ -283,20 +307,31 @@ a:hover {
 }
 
 .post-date {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
   font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: #4e6b58;
 }
 
+.post-date .sep {
+  color: #a9b4ab;
+}
+
+.post-date .read-time {
+  color: #5f6a63;
+}
+
 .post-title {
   margin: 0;
   font-family: 'Newsreader', serif;
-  font-size: 32px;
-  line-height: 1.24;
+  font-size: 36px;
+  line-height: 1.2;
   font-weight: 300;
   color: #23282a;
-  max-width: 34ch;
+  max-width: 30ch;
   text-wrap: pretty;
 }
 
@@ -308,14 +343,14 @@ a:hover {
   line-height: 1.55;
   font-weight: 300;
   color: #4d5650;
-  max-width: 48ch;
+  max-width: 50ch;
   text-wrap: pretty;
 }
 
 .post-body {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 22px;
   max-width: 62ch;
   border-top: 1px solid #e6ebe3;
   padding-top: 34px;
@@ -329,6 +364,240 @@ a:hover {
   font-weight: 400;
   color: #2f3835;
   text-wrap: pretty;
+}
+
+.post-body .post-heading {
+  margin: 30px 0 0;
+  font-family: 'Newsreader', serif;
+  font-size: 28px;
+  line-height: 1.26;
+  font-weight: 400;
+  color: #23282a;
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+
+.post-body .post-heading:first-child {
+  margin-top: 0;
+}
+
+.post-body .post-subheading {
+  margin: 22px 0 -6px;
+  font-family: 'Karla', sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #4e6b58;
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+
+/* Numbered requirements list */
+
+.post-body .req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.post-body .req-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+}
+
+.post-body .req-num {
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: #4e6b58;
+}
+
+.post-body .req-text {
+  font-family: 'Newsreader', serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #2f3835;
+  text-wrap: pretty;
+}
+
+/* Bulleted list */
+
+.post-body .dot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.post-body .dot-row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+
+.post-body .dot-row .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8ba18f;
+  transform: translateY(-4px);
+}
+
+.post-body .dot-row .dot-text {
+  font-family: 'Newsreader', serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #2f3835;
+  text-wrap: pretty;
+}
+
+/* SPIKE / DROP / STEADY card */
+
+.post-body .label-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e6ebe3;
+  background: #f4f7f1;
+  border-radius: 4px;
+  padding: 4px 0;
+  margin: 6px 0;
+}
+
+.post-body .label-card .label-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e9eee5;
+}
+
+.post-body .label-card .label-name {
+  font-family: 'Karla', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  color: #4e6b58;
+}
+
+.post-body .label-card .label-def {
+  font-family: 'Newsreader', serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #2f3835;
+  text-wrap: pretty;
+}
+
+/* Pull note */
+
+.post-body .pull-note {
+  margin: 0;
+  padding-left: 18px;
+  border-left: 2px solid #dfe8de;
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #4d5650;
+  text-wrap: pretty;
+}
+
+/* Screenshots */
+
+.post-body .figure {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.post-body .screens-plinth {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  background: #f1f5ee;
+  border: 1px solid #e6ebe3;
+  border-radius: 4px;
+}
+
+.post-body .screens-plinth.plinth-single {
+  padding: 30px 24px;
+}
+
+.post-body .screens-plinth.plinth-pair {
+  padding: 30px 20px;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.post-body .phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-body .phone-frame {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #dde4d9;
+  padding: 5px;
+  box-shadow: 0 12px 26px -18px rgba(35, 40, 42, .5);
+}
+
+.post-body .phone-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #eef2ec;
+}
+
+.post-body .phone-frame img.is-missing {
+  visibility: hidden;
+}
+
+.post-body .phone-frame.size-large {
+  width: 232px;
+  height: 494px;
+  border-radius: 28px;
+}
+
+.post-body .phone-frame.size-large img {
+  border-radius: 23px;
+}
+
+.post-body .phone-frame.size-small {
+  width: 182px;
+  height: 390px;
+  border-radius: 24px;
+}
+
+.post-body .phone-frame.size-small img {
+  border-radius: 19px;
+}
+
+.post-body .phone-caption {
+  font-family: 'Karla', sans-serif;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #5f6a63;
+}
+
+.post-body .screens-caption {
+  margin: 0;
+  font-family: 'Karla', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #5f6a63;
 }
 
 .post-footer {
@@ -348,4 +617,20 @@ a:hover {
 
 .post-footer-note a {
   color: #4e6b58;
+}
+
+@media (max-width: 700px) {
+  .post-title {
+    font-size: 28px;
+  }
+
+  .post-body .post-heading {
+    font-size: 24px;
+  }
+
+  .post-body .screens-plinth.plinth-single,
+  .post-body .screens-plinth.plinth-pair {
+    padding: 20px;
+    gap: 18px;
+  }
 }

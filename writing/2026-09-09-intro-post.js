@@ -1,9 +1,20 @@
 export default {
-  published: false,
+  published: true,
+  slug: "intro",
   title: "Welcome!",
-  date: "Sept 9", short: "Sept 2026",
-  dek: "Why build at all",
+  year: "2026",
+  meta: "August 2026",
+  readTime: "2 min read",
+  dek: "Thanks for stopping by! A little bit about me and why I'm building and documenting this journey",
   body: [
-    "TBD",
+    "My name is Nicole, and in 2019, I ended up in the ICU due to diabetic ketoacidosis and was diagnosed with Type 1 diabetes; I didn't fully understand at the time — I figured life would continue as is except I'd just have to take insulin — but this diagnosis would permanently alter my quality of life and how I'd view health.",
+    "Thankfully, now is the best time to be diabetic thanks to all of the wearable technology available, with the invention of Continuous Glucose Monitors (CGMs) and insulin pumps. As I learned how to manage my type 1 diabetes the first 4 years, I became exceedingly familiar with carbohydrate counting, insulin ratio calculations, glycemic indexes, and meal timings.",
+    "In 2023, I began developing severe acne on my cheeks and jawline. While this would typically point to hormonal acne, I didn't exhibit any other signs of hormonal imbalance, and my labs all came back in range. Similarly, I experience no gut irritation or symptoms. I tried multiple antibiotics and dermatologist prescribed topical treatments and found no sustained success. I even visited doctors in the East and dabbled in Traditional Chinese Medicine (TCM). Western doctors and dermatologists would take a narrow view at my symptoms and give vague recommendations for my diet and lifestyle. Eastern doctors and practitioners took a holistic view and were familiar with my diet and the TCM properties, but failed to truly account for me being type 1 diabetic (given the low incidence rate in East Asia).",
+    "The past 3 years I expanded my knowledge from simply managing my blood glucose to a more holistic take on my health, observing exercise patterns, sleep frequency, hormonal shifts, and lifestyle practices and came to a frustrating conclusion: just as multiple factors affect my blood glucose, my blood glucose also affects how my body functions on multiple levels.",
+    "Nobody could quite give me a complete picture of my health and account for both my chronic condition and my cultural background.",
+    "While ultimately I've decided to take Accutane as a last resort for my acne, I still want to better understand my body to manage not only my diabetes, but to build a body that will carry me into old age and reduce risk of further complications so I can live a full life.",
+    "As I mentioned before, technology has made managing not only type 1 diabetes, but health at multiple levels easier than ever. But similar to my frustrations visiting different doctors, there is no tool that quite fits all my health needs. That's why I'm building.",
+    "My mission is to build tools that help me better understand the complete picture of my health and improve my quality of life.",
+    "This is easier said than done of course, given the challenge of cutting through the noise of hundreds of health metrics readily available, and evident by the current wearable tech race. But this is my attempt and journey at building what works for me."
   ]
 };

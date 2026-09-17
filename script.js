@@ -15,25 +15,48 @@ function postRowHtml(post, index) {
   return `
     <a href="#" class="post-row" data-route="post" data-index="${index}">
       <span class="title">${escapeHtml(post.title)}</span>
-      <span class="date">${escapeHtml(post.short)}</span>
     </a>`;
+}
+
+function recentMonthGroupHtml(meta, rows) {
+  return `
+    <div class="recent-month-group">
+      <div class="recent-month-label">${escapeHtml(meta)}</div>
+      ${rows}
+    </div>`;
 }
 
 function writingRowHtml(post, index) {
   return `
     <a href="#" class="writing-row" data-route="post" data-index="${index}">
-      <div class="row-top">
-        <span class="title">${escapeHtml(post.title)}</span>
-        <span class="date">${escapeHtml(post.short)}</span>
-      </div>
+      <span class="title">${escapeHtml(post.title)}</span>
       <span class="dek">${escapeHtml(post.dek)}</span>
     </a>`;
+}
+
+function writingMonthGroupHtml(meta, rows) {
+  return `
+    <div class="writing-year-group">
+      <div class="section-label">${escapeHtml(meta)}</div>
+      ${rows}
+    </div>`;
 }
 
 function renderHome() {
   const hasPosts = POSTS.length > 0;
   const count = Math.max(1, Math.min(POSTS.length, RECENT_COUNT));
   const recent = POSTS.slice(0, count);
+
+  const groups = [];
+  recent.forEach((post, i) => {
+    const meta = post.meta || post.year;
+    const group = groups[groups.length - 1];
+    if (group && group.meta === meta) {
+      group.rows.push(postRowHtml(post, i));
+    } else {
+      groups.push({ meta, rows: [postRowHtml(post, i)] });
+    }
+  });
 
   return `
     <div class="home">
@@ -44,7 +67,7 @@ function renderHome() {
       ${hasPosts ? `
       <div class="recent">
         <div class="section-label">The project, so far</div>
-        ${recent.map((post, i) => postRowHtml(post, i)).join("")}
+        ${groups.map((g) => recentMonthGroupHtml(g.meta, g.rows.join(""))).join("")}
         <div class="list-end"></div>
         <a href="#" class="all-writing" data-route="writing">All writing →</a>
       </div>` : ""}
@@ -67,13 +90,139 @@ function renderHome() {
 }
 
 function renderWriting() {
+  const groups = [];
+  POSTS.forEach((post, i) => {
+    const meta = post.meta || post.year;
+    const group = groups[groups.length - 1];
+    if (group && group.meta === meta) {
+      group.rows.push(writingRowHtml(post, i));
+    } else {
+      groups.push({ meta, rows: [writingRowHtml(post, i)] });
+    }
+  });
+
   return `
     <div class="writing">
       <div class="writing-list">
-        ${POSTS.map((post, i) => writingRowHtml(post, i)).join("")}
+        ${groups.map((g) => writingMonthGroupHtml(g.meta, g.rows.join(""))).join("")}
         <div class="list-end"></div>
       </div>
     </div>`;
+}
+
+function numberedListHtml(items) {
+  return `
+    <div class="req-list">
+      ${items.map((text, i) => `
+        <div class="req-row">
+          <span class="req-num">${String(i + 1).padStart(2, "0")}</span>
+          <span class="req-text">${escapeHtml(text)}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+function bulletedListHtml(items) {
+  return `
+    <div class="dot-list">
+      ${items.map((text) => `
+        <div class="dot-row">
+          <span class="dot"></span>
+          <span class="dot-text">${escapeHtml(text)}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+function labelCardHtml(labels) {
+  return `
+    <div class="label-card">
+      ${labels.map(({ label, def }) => `
+        <div class="label-row">
+          <span class="label-name">${escapeHtml(label)}</span>
+          <span class="label-def">${escapeHtml(def)}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+// Screenshot sources as named constants, keyed by figure type, so real
+// images can be dropped in later without touching post data or markup.
+const FIGURE_SRC = {
+  captureSnap: "writing/screenshots/capture.png",
+  captureDish: "writing/screenshots/glucose.png",
+  editName: "writing/screenshots/edit-name.png",
+  editMacros: "writing/screenshots/edit.png",
+  log: "writing/screenshots/log.png",
+};
+
+function phoneFrameHtml(src, alt, size) {
+  return `
+    <div class="phone-frame size-${size}">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" onerror="this.classList.add('is-missing')">
+    </div>`;
+}
+
+function figureHtml(kind) {
+  if (kind === "capture") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-pair">
+          <div class="phone">
+            ${phoneFrameHtml(FIGURE_SRC.captureSnap, "Camera / capture", "small")}
+            <span class="phone-caption">Snap</span>
+          </div>
+          <div class="phone">
+            ${phoneFrameHtml(FIGURE_SRC.captureDish, "Detected dish + components", "small")}
+            <span class="phone-caption">Detected dish</span>
+          </div>
+        </div>
+        <p class="screens-caption">One photo in, a dish breakdown out — no dish name or ingredient list to type.</p>
+      </div>`;
+  }
+  if (kind === "edit") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-pair">
+          <div class="phone">
+            ${phoneFrameHtml(FIGURE_SRC.editName, "Correcting the identified dish name", "small")}
+            <span class="phone-caption">Correct dish</span>
+          </div>
+          <div class="phone">
+            ${phoneFrameHtml(FIGURE_SRC.editMacros, "Editing macros and confidence score", "small")}
+            <span class="phone-caption">Adjust macros</span>
+          </div>
+        </div>
+        <p class="screens-caption">Editable at the ingredient level, with the vision model's confidence score shown so I know when to look twice.</p>
+      </div>`;
+  }
+  if (kind === "log") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-single">
+          ${phoneFrameHtml(FIGURE_SRC.log, "Meal log", "large")}
+        </div>
+        <p class="screens-caption">The meal log — one dish at a time is a data point; the list is the pattern.</p>
+      </div>`;
+  }
+  return "";
+}
+
+function noteHtml(block) {
+  const linkIndex = block.linkSlug ? POSTS.findIndex((p) => p.slug === block.linkSlug) : -1;
+  const link = linkIndex >= 0
+    ? `<a href="#" data-route="post" data-index="${linkIndex}">${escapeHtml(block.linkText)}</a>`
+    : escapeHtml(block.linkText || "");
+  return `<p class="pull-note">${escapeHtml(block.note)}${link}${escapeHtml(block.after || "")}</p>`;
+}
+
+function postBodyBlockHtml(block) {
+  if (typeof block === "string") return `<p>${escapeHtml(block)}</p>`;
+  if (block.heading) return `<h2 class="post-heading">${escapeHtml(block.heading)}</h2>`;
+  if (block.subheading) return `<h3 class="post-subheading">${escapeHtml(block.subheading)}</h3>`;
+  if (block.numbered) return numberedListHtml(block.numbered);
+  if (block.bulleted) return bulletedListHtml(block.bulleted);
+  if (block.labels) return labelCardHtml(block.labels);
+  if (block.note) return noteHtml(block);
+  if (block.figure) return figureHtml(block.figure);
+  return "";
 }
 
 function renderPost() {
@@ -84,12 +233,14 @@ function renderPost() {
     <div class="post-page">
       <a href="#" class="back-link" data-route="writing">← Writing</a>
       <div class="post-head">
-        <div class="post-date">${escapeHtml(post.date)}</div>
+        <div class="post-date">
+          <span>${escapeHtml(post.meta || post.year)}</span>${post.readTime ? `<span class="sep">/</span><span class="read-time">${escapeHtml(post.readTime)}</span>` : ""}
+        </div>
         <h1 class="post-title">${escapeHtml(post.title)}</h1>
         <p class="post-dek">${escapeHtml(post.dek)}</p>
       </div>
       <div class="post-body">
-        ${post.body.map((para) => `<p>${escapeHtml(para)}</p>`).join("")}
+        ${post.body.map(postBodyBlockHtml).join("")}
       </div>
       <div class="post-footer">
         <span class="post-footer-note">Thoughts? <a href="mailto:huin148j@gmail.com">huin148j@gmail.com</a></span>

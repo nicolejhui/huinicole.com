@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Designing SikFan's User Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="designing-sikfan-ux.css">
+</head>
+<body>
+  <article class="post-wrap">
+    <header class="post-header">
+      <div class="post-meta">
+        <span>September 2026</span>
+        <span class="dot"></span>
+        <span>9 min read</span>
+      </div>
+      <h1 class="post-title">Designing SikFan's User Experience</h1>
+      <p class="post-subtitle">How I created the requirements to determine model architecture</p>
+    </header>
+
+    <div class="post-body">
+      <h2>What does success look like:</h2>
+      <p>My goal was to increase my time in range by predicting the blood glucose impact based on the nutritional profile of my meals to inform my insulin dosage. Time in range is the time spent within a specified glucose range (the standard being 70 – 180 mg/dL). The more time a diabetic spends within this range, the more stable their blood glucose and the less they experience symptoms of hypo and hyperglycemia.</p>
+
+      <h2>Defining the User Experience:</h2>
+      <p>Who is the user?</p>
+      <p>Me, duh! If you want to read why I'm building this, check out <a href="2026-09-09-intro-post.js">my intro article</a>!</p>
+      <p>A type 1 diabetic who typically eats food of the east Asian cuisine. While I utilize a CGM and insulin pump but, this app should still be usable by those who don't, especially since there are some days where I rely on manual injections.</p>
+
+      <h2>What does the user need to inform their insulin dosage:</h2>
+      <p>In order to inform how much insulin to take, a diabetic needs to understand, at minimum, the following things:</p>
+      <ol class="req-list">
+        <li><span class="req-num">01</span><span class="req-text">The amount of carbohydrates, fat, and fiber in a meal that will be consumed</span></li>
+        <li><span class="req-num">02</span><span class="req-text">Their blood glucose at that moment</span></li>
+        <li><span class="req-num">03</span><span class="req-text">The general glycemic index of the ingredients in the dish, which affect how fast glucose is absorbed by the bloodstream</span></li>
+        <li><span class="req-num">04</span><span class="req-text">How far in advance should the insulin be taken prior to the meal (Pre-bolusing)*</span></li>
+      </ol>
+
+      <h3>Nutritional information:</h3>
+      <p>This could be determined based on the photo of the meal with a vision model and connection to a nutritional database API or dataset.</p>
+
+      <h3>Blood glucose at time of eating meal:</h3>
+      <p>This could be either manually entered or retrieved through a CGM API integration. Because Dexcom's API integration results in a 3 hour delay and I wanted to allow an entry point for days I don't wear a CGM, I decided to allow the user to manually enter the blood glucose for the MVP.</p>
+
+      <h3>Glycemic Index:</h3>
+      <p>This is where it gets tricky as there are not many datasets that have glycemic indexes readily available for individual food items; additionally, everyone's rate of absorption will vary even if they eat the same food</p>
+      <p>So help give myself an idea about the glycemic index, I decided to use a form of a regression glucose model that could inform if this type of food typically spikes, stabilizes, or drops my blood glucose based on prior meal data.</p>
+      <p>Typical regression models return a forecasted numerical output that of a Y variable based on input variables. In this case, the output would be the predicted blood glucose value ~2 hours after eating a meal, with the input being the nutritional information, beginning blood glucose value, and time.</p>
+      <p>However, just telling a user that their blood sugar will be 168 after eating a certain meal isn't valuable, in fact, it's too granular; when calculating my insulin dosage, I just want to know in general if the food I'm eating will really spike my blood glucose or not.</p>
+      <ul class="dot-list nested">
+        <li><span class="dot"></span><span class="dot-text">X = inputs = factors that affect my blood glucose post meal (assuming a standard insulin dosage and no pre-bolus)</span></li>
+        <li><span class="dot"></span><span class="dot-text">Nutritional information, blood glucose at meal time</span></li>
+      </ul>
+      <p>So instead of displaying the raw numerical prediction, I decided to create UI labels based on numeric ranges:</p>
+
+      <div class="label-card">
+        <div class="label-row">
+          <span class="label-name">Spike</span>
+          <span class="label-def">If 2 hours post-meal glucose is 40+ mg/dL greater than mealtime glucose</span>
+        </div>
+        <div class="label-row">
+          <span class="label-name">Drop</span>
+          <span class="label-def">If 2 hours post-meal glucose is less than 20 mg/dL than mealtime glucose</span>
+        </div>
+        <div class="label-row">
+          <span class="label-name">Steady</span>
+          <span class="label-def">If 2 hours post-meal glucose is within the range of "drop" and "spike" compared to mealtime glucose</span>
+        </div>
+      </div>
+
+      <p>These labels would be displayed in the UI along with a blood glucose curve, allowing the user to understand glucose impact at a glance while still maintaining the precision of the model</p>
+
+      <div class="screens-plinth">
+        <div class="phone">
+          <div class="phone-frame size-large">
+            <img data-screenshot="impactCurve" alt="Impact label and blood glucose curve screen">
+          </div>
+        </div>
+      </div>
+      <p class="screens-caption">Impact label + curve</p>
+
+      <h3>Insulin dosage timing:</h3>
+      <p>Rapid-acting insulin does not take effect at the time of injection. Instead, rapid-acting insulin begins its onset at 15 minutes and can take up to 60 min to become fully absorbed through the bloodstream lower blood glucose.</p>
+      <p>I decided to exclude this factor in my MVP because this information is not easily accessible through an API like CGM data. Additionally, this information is not required to calculate the dosage amount, but rather is used to keep one's blood glucose as stable at possible during and after a meal.</p>
+
+      <h2>How will the user get the information needed to inform their insulin dosage</h2>
+      <p>A major pain point of most nutrition apps is needing to manually enter the dish name and ingredients to get the total nutrition information. Most apps are now mitigating by allowing users to simply take a photo of their food and using LLMs to identify what type of food and the nutritional information (or they have a connection to nutritional databases via APIs).</p>
+      <p>I knew I wanted a similar experience where a user can find the information they need with a simple snap of the picture. Instead of using an LLM, I ended up using a vision model comprised of FastSAM/CLIP with the LLM as a fallback only. Why I didn't use an LLM for computer vision is further explored in this article.</p>
+
+      <div class="screens-plinth">
+        <div class="phone">
+          <div class="phone-frame size-small">
+            <img data-screenshot="snap" alt="Camera snap screen">
+          </div>
+          <span class="phone-caption">Snap</span>
+        </div>
+        <div class="phone">
+          <div class="phone-frame size-small">
+            <img data-screenshot="detectedDish" alt="Detected dish screen">
+          </div>
+          <span class="phone-caption">Detected dish</span>
+        </div>
+      </div>
+
+      <h2>What happens if the model is wrong?</h2>
+      <p>Despite the technological advances in machine learning and artificial intelligence in the recent years, models are not perfect. They overfit, hallucinate, or simply insist that something is X and it's really not.</p>
+      <p>Because I am building application that relies on a model to help inform a health decision, especially one as critical as insulin dosage, I knew that I needed to allow the myself to update and edit the predicted outputs.</p>
+      <p>If the predicted blood glucose impact is incorrect, then it's less likely due to the glucose regression model, but more likely due to the output of the vision model. Why? Because the blood glucose regression model is calculated statistically on structured data while my vision model uses unstructured meal data to develop pattern recognition. The vision model incorrectly identifying dish components or portion would affect final post-meal glucose more than the regression model being a few numbers off.</p>
+      <p>This means, that instead of correcting the blood glucose or nutritional data, I needed to allow myself to correct the actual dish composition and portion. Not only did I design SikFan to allow the user to edit the dish name, component list, and portion size, but I also chose to display the vision model's confidence score to indicate to user if they needed to potentially correct the dish.</p>
+      <p>Once a I correct a dish, then my glucose model should update based on the correctly identified dish composition and portion values.</p>
+
+      <div class="screens-plinth">
+        <div class="phone">
+          <div class="phone-frame size-large">
+            <img data-screenshot="confidenceEdit" alt="Confidence score and edit components screen">
+          </div>
+        </div>
+      </div>
+      <p class="screens-caption">Confidence + edit components</p>
+
+      <h2>Cool, I'm happy with the prediction, now what happens?</h2>
+      <p>Well, the whole reason why I'm building is to build tools to provide a comprehensive picture, meaning I don't want to understand how one dish affects me. Instead, I wanted to build a meal log so that I could quickly browse to understand how certain foods impact my blood glucose at the broader level.</p>
+      <p>Furthermore, SikFan fits my specific needs due to the models trained and built on my personal data. To prevent models from going stale, I needed to ensure that with each logged meal prediction, my vision model would improve and become better at recognizing what I was eating.</p>
+      <p>I didn't want to constantly update a dataset or hardcode rules for my vision model to recognize what I was eating; it had to be self-learning.</p>
+
+      <div class="screens-plinth">
+        <div class="phone">
+          <div class="phone-frame size-large">
+            <img data-screenshot="mealLog" alt="Meal log screen">
+          </div>
+        </div>
+      </div>
+      <p class="screens-caption">Meal log</p>
+
+      <h2>The final user experience:</h2>
+      <p>Once I developed my user experience and design, I could determine my model architecture based on the following requirements:</p>
+      <ul class="dot-list">
+        <li><span class="dot"></span><span class="dot-text">As a user, when I take a picture of my meal, I should be able to enter my current blood sugar manually, and then see a screen displaying my predicted blood glucose impact and nutritional breakdown of my dish</span></li>
+        <li><span class="dot"></span><span class="dot-text">If I believe that the macros of my meal is incorrect, then I should be able to edit the composition of my meal or portion size at the ingredient level and see an updated glucose prediction</span></li>
+        <li><span class="dot"></span><span class="dot-text">Once I'm satisfied with the predicted impact, I should then be able to log or record this meal so I identify patterns for future meals and understand how certain dishes affect my blood sugar</span></li>
+        <li><span class="dot"></span><span class="dot-text">With every dish, the models should become better at recognizing what I'm eating and grow more accurate at predicting how my blood glucose will be affected.</span></li>
+      </ul>
+      <p>SikFan ended up using Gaussian Process Regression (GPR) model to predict glucose, layered on top of a vision model comprised of FastSAM/CLIP with an LLM fallback for food recognition. Stay tuned for another article diving deep into how I chose these models and more on when the LLM is used.</p>
+    </div>
+  </article>
+
+  <script src="designing-sikfan-ux.js"></script>
+</body>
+</html>

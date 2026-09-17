@@ -6,11 +6,22 @@ let route = "home"; // "home" | "writing" | "post"
 let postIndex = 0;
 
 function pathForRoute(r) {
-  return r === "writing" ? "/writings" : "/";
+  if (r === "writing") return "/writings";
+  if (r === "post") {
+    const post = POSTS[postIndex];
+    return post && post.slug ? `/writings/${post.slug}` : "/writings";
+  }
+  return "/";
 }
 
 function routeForPath(path) {
-  return path === "/writings" || path === "/writing" ? "writing" : "home";
+  if (path === "/writings" || path === "/writing") return { route: "writing" };
+  const postMatch = path.match(/^\/writings?\/([^/]+)\/?$/);
+  if (postMatch) {
+    const index = POSTS.findIndex((p) => p.slug === postMatch[1]);
+    if (index >= 0) return { route: "post", index };
+  }
+  return { route: "home" };
 }
 
 function escapeHtml(str) {
@@ -133,11 +144,18 @@ function numberedListHtml(items) {
 function bulletedListHtml(items) {
   return `
     <div class="dot-list">
-      ${items.map((text) => `
+      ${items.map((item) => {
+        const text = typeof item === "string" ? item : item.text;
+        const sub = typeof item === "object" && item.sub ? item.sub : null;
+        return `
         <div class="dot-row">
-          <span class="dot"></span>
           <span class="dot-text">${escapeHtml(text)}</span>
-        </div>`).join("")}
+          ${sub ? `
+          <div class="dot-sublist">
+            ${sub.map((s) => `<span class="dot-text">${escapeHtml(s)}</span>`).join("")}
+          </div>` : ""}
+        </div>`;
+      }).join("")}
     </div>`;
 }
 
@@ -155,18 +173,43 @@ function labelCardHtml(labels) {
 // Screenshot sources as named constants, keyed by figure type, so real
 // images can be dropped in later without touching post data or markup.
 const FIGURE_SRC = {
-  glucose: "writing/screenshots/glucose.png",
-  captureSnap: "writing/screenshots/capture.png",
-  captureDish: "writing/screenshots/glucose.png",
-  editName: "writing/screenshots/edit-name.png",
-  editMacros: "writing/screenshots/edit.png",
-  log: "writing/screenshots/log.png",
+  glucose: "/writing/screenshots/glucose.png",
+  captureSnap: "/writing/screenshots/capture.png",
+  captureDish: "/writing/screenshots/glucose.png",
+  editName: "/writing/screenshots/edit-name.png",
+  editMacros: "/writing/screenshots/edit.png",
+  log: "/writing/screenshots/log.png",
+  videoDemo: "/writing/screenshots/demo.mp4",
+  tirRollercoaster: "/writing/screenshots/rollercoaster.png",
+  tirSteady: "/writing/screenshots/stable-glucose.png",
+  tirComparison: "/writing/screenshots/time-in-range-dexcom.jpeg",
 };
 
 function phoneFrameHtml(src, alt, size) {
   return `
     <div class="phone-frame size-${size}">
       <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" onerror="this.classList.add('is-missing')">
+    </div>`;
+}
+
+function graphFrameHtml(src, alt) {
+  return `
+    <div class="graph-frame">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" onerror="this.classList.add('is-missing')">
+    </div>`;
+}
+
+function photoFrameHtml(src, alt) {
+  return `
+    <div class="photo-frame">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" onerror="this.classList.add('is-missing')">
+    </div>`;
+}
+
+function phoneFrameVideoHtml(src, size) {
+  return `
+    <div class="phone-frame size-${size}">
+      <video src="${escapeHtml(src)}" controls playsinline preload="metadata" onerror="this.classList.add('is-missing')"></video>
     </div>`;
 }
 
@@ -177,7 +220,7 @@ function figureHtml(kind) {
         <div class="screens-plinth plinth-single">
           ${phoneFrameHtml(FIGURE_SRC.glucose, "Impact label + glucose curve", "large")}
         </div>
-        <p class="screens-caption">The label answers the question at a glance, with the model's predicted curve underneath it.</p>
+        <p class="screens-caption">A quick glance at the results screen shows blood glucose impact with the model's forecast beneath it.</p>
       </div>`;
   }
   if (kind === "capture") {
@@ -186,14 +229,14 @@ function figureHtml(kind) {
         <div class="screens-plinth plinth-pair">
           <div class="phone">
             ${phoneFrameHtml(FIGURE_SRC.captureSnap, "Camera / capture", "small")}
-            <span class="phone-caption">Snap</span>
+            <span class="phone-caption">Meal scan</span>
           </div>
           <div class="phone">
             ${phoneFrameHtml(FIGURE_SRC.captureDish, "Detected dish + components", "small")}
             <span class="phone-caption">Detected dish</span>
           </div>
         </div>
-        <p class="screens-caption">One photo in, a dish breakdown out — no dish name or ingredient list to type.</p>
+        <p class="screens-caption">Users are able to take a picture to receive blood glucose impact and nutritional information</p>
       </div>`;
   }
   if (kind === "edit") {
@@ -206,10 +249,10 @@ function figureHtml(kind) {
           </div>
           <div class="phone">
             ${phoneFrameHtml(FIGURE_SRC.editMacros, "Editing macros and confidence score", "small")}
-            <span class="phone-caption">Adjust macros</span>
+            <span class="phone-caption">Correct ingredients and adjust portion</span>
           </div>
         </div>
-        <p class="screens-caption">Editable at the ingredient level, with the vision model's confidence score shown so I know when to look twice.</p>
+        <p class="screens-caption">Vision model confidence score is displayed so users can judge and correct ingredient compositoin or portions as needed</p>
       </div>`;
   }
   if (kind === "log") {
@@ -218,7 +261,40 @@ function figureHtml(kind) {
         <div class="screens-plinth plinth-single">
           ${phoneFrameHtml(FIGURE_SRC.log, "Meal log", "large")}
         </div>
-        <p class="screens-caption">The meal log — one dish at a time is a data point; the list is the pattern.</p>
+        <p class="screens-caption">The meal log provides a visual library of past meals and their glucose impact at a glance. Users can click on a previous meal to view full details</p>
+      </div>`;
+  }
+  if (kind === "tir") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-pair">
+          <div class="graph">
+            ${graphFrameHtml(FIGURE_SRC.tirRollercoaster, "Glucose graph showing a volatile, rollercoaster-like pattern")}
+            <span class="graph-caption">Rollercoaster glucose range</span>
+          </div>
+          <div class="graph">
+            ${graphFrameHtml(FIGURE_SRC.tirSteady, "Glucose graph showing 80% time-in-range")}
+            <span class="graph-caption">Consistent time in range</span>
+          </div>
+        </div>
+      </div>`;
+  }
+  if (kind === "tir-comparison") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-single">
+          ${photoFrameHtml(FIGURE_SRC.tirComparison, "Dexcom's Trends section showing time-in-range")}
+        </div>
+        <p class="screens-caption">Dexcom's trends section showing time in range</p>
+      </div>`;
+  }
+  if (kind === "video-demo") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-single">
+          ${phoneFrameVideoHtml(FIGURE_SRC.videoDemo, "large")}
+        </div>
+        <p class="screens-caption">End-to-end demo of SikFan in action</p>
       </div>`;
   }
   return "";
@@ -283,19 +359,21 @@ document.addEventListener("click", (e) => {
   route = el.getAttribute("data-route");
   if (idxAttr !== null) postIndex = Number(idxAttr);
   window.scrollTo(0, 0);
-  if (route === "home" || route === "writing") {
-    const path = pathForRoute(route);
-    if (path !== window.location.pathname) {
-      history.pushState({ route }, "", path);
-    }
+  const path = pathForRoute(route);
+  if (path !== window.location.pathname) {
+    history.pushState({ route, postIndex }, "", path);
   }
   render();
 });
 
 window.addEventListener("popstate", () => {
-  route = routeForPath(window.location.pathname);
+  const resolved = routeForPath(window.location.pathname);
+  route = resolved.route;
+  if (resolved.index !== undefined) postIndex = resolved.index;
   render();
 });
 
-route = routeForPath(window.location.pathname);
+const initialRoute = routeForPath(window.location.pathname);
+route = initialRoute.route;
+if (initialRoute.index !== undefined) postIndex = initialRoute.index;
 render();

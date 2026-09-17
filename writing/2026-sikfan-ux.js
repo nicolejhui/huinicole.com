@@ -24,10 +24,10 @@ export default {
     ] },
 
     { subheading: "Nutritional information" },
-    "This could be determined based on the photo of the meal with a vision model and connection to a nutritional database API or dataset.",
+    "Nutritional information can be retrieved based on the photo of the meal with a vision model and connection to a nutritional database API or dataset.",
 
     { subheading: "Blood glucose at time of eating" },
-    "This could be either manually entered or retrieved through a CGM API integration. Because Dexcom's API integration results in a three hour delay, and I wanted to allow an entry point for days I don't wear a CGM, I decided to let the user manually enter the blood glucose for the MVP.",
+    "Bloog glucose could be either manually entered or retrieved through a CGM API integration. Because Dexcom's API integration results in a three hour delay, and I wanted to allow an entry point for days I don't wear a CGM, I decided to let the user manually enter the blood glucose for the MVP.",
 
     { subheading: "Glycemic index" },
     "This is where it gets tricky. There are not many datasets that have glycemic indexes readily available for individual food items; additionally, everyone's rate of absorption will vary even if they eat the same food.",

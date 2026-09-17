@@ -146,6 +146,7 @@ function labelCardHtml(labels) {
 // Screenshot sources as named constants, keyed by figure type, so real
 // images can be dropped in later without touching post data or markup.
 const FIGURE_SRC = {
+  glucose: "writing/screenshots/glucose.png",
   captureSnap: "writing/screenshots/capture.png",
   captureDish: "writing/screenshots/glucose.png",
   editName: "writing/screenshots/edit-name.png",
@@ -161,6 +162,15 @@ function phoneFrameHtml(src, alt, size) {
 }
 
 function figureHtml(kind) {
+  if (kind === "glucose") {
+    return `
+      <div class="figure">
+        <div class="screens-plinth plinth-single">
+          ${phoneFrameHtml(FIGURE_SRC.glucose, "Impact label + glucose curve", "large")}
+        </div>
+        <p class="screens-caption">The label answers the question at a glance, with the model's predicted curve underneath it.</p>
+      </div>`;
+  }
   if (kind === "capture") {
     return `
       <div class="figure">

@@ -41,6 +41,7 @@ export default {
       { label: "STEADY", def: "2-hour post-meal glucose sits between drop and spike, compared to mealtime glucose" }
     ] },
     "These labels are displayed in the UI along with a blood glucose curve, allowing the user to understand glucose impact at a glance while still maintaining the precision of the model.",
+    { figure: "glucose" },
 
     { subheading: "Insulin dosage timing" },
     "Rapid-acting insulin does not take effect at the time of injection. Instead, it begins its onset at 15 minutes and can take up to 60 minutes to become fully absorbed through the bloodstream and lower blood glucose.",

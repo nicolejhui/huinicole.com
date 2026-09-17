@@ -93,6 +93,7 @@ function renderHome() {
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="4.75" width="19" height="14.5"/><path d="M3.2 6l8.8 6.9L20.8 6"/></svg>
           </a>
         </div>
+        <p class="ai-note">Note: while Claude code helped me build my apps and this website, all my writing is 100% written by me</p>
       </div>
     </div>`;
 }

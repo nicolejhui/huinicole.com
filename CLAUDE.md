@@ -8,6 +8,10 @@ Personal site built as static HTML/CSS/JS (no framework, no build step). Posts l
 - Only touch content text if the user explicitly asks for a copy edit or rewrite.
 - Formatting, structure, styling, and code (script.js, style.css, posts.js wiring) can be changed freely as needed to implement requests.
 
+## Workflow
+
+- Before pushing any change, start a local build/server and let the user verify it themselves. Do not commit/push until they confirm.
+
 ## Design source of truth
 
 - The claude.ai/design project "Feminine writing blog design" (projectId `7cde0b81-fe59-4467-bfa7-939cc39fb3dc`, file `Nicole Hui.dc.html`) is the source of truth for design decisions on this site: type scale, colors, spacing, component layout (lists, cards, figures, etc.).

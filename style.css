@@ -619,16 +619,10 @@ a:hover {
   color: #4e6b58;
 }
 
-.site-footer {
-  margin-top: auto;
-  border-top: 1px solid #e6ebe3;
-  padding: 18px 0 32px;
-}
-
-.site-footer p {
-  margin: 0;
+.post-footer-note .ai-note {
+  display: block;
+  margin-top: 6px;
   font-size: 12px;
-  line-height: 1.5;
   color: #8a938c;
 }
 

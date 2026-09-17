@@ -261,7 +261,7 @@ function renderPost() {
         ${post.body.map(postBodyBlockHtml).join("")}
       </div>
       <div class="post-footer">
-        <span class="post-footer-note">Thoughts? <a href="mailto:huin148j@gmail.com">huin148j@gmail.com</a></span>
+        <span class="post-footer-note">Thoughts? <a href="mailto:huin148j@gmail.com">huin148j@gmail.com</a><span class="ai-note">Note: while Claude code helped me build my apps and this website, all my writing is 100% written by me</span></span>
         <a href="#" class="all-writing" data-route="writing">All writing →</a>
       </div>
     </div>`;
